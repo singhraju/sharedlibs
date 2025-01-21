@@ -1,23 +1,15 @@
-# just give your credentialsId for the docker repo that you have saved in the Jenkins credentials manager.
-def login() {
-    withCredentials([usernamePassword(credentialsId: '391e5063-438b-4b7b-b98a-e46b7211ea3e', usernameVariable: 'username', passwordVariable: 'password')]) {
-        sh """
-            docker login --username="${username}" --password="${password}"
-        """
+// Define methods for Docker-related tasks
+
+def login(String credentialsId = 'docker-credentials') {
+    withCredentials([usernamePassword(credentialsId: credentialsId, usernameVariable: 'DOCKER_USER', passwordVariable: 'DOCKER_PASS')]) {
+        sh 'docker login -u $DOCKER_USER -p $DOCKER_PASS'
     }
 }
 
-def build(String tag,String file_name) {
-    def scriptcontents = libraryResource "Dockerfile"
-    writeFile file:"Dockerfile", text: scriptcontents
-
-    sh """
-        docker build --build-arg file_name="${file_name}" -t "${tag}"  .
-    """
+def build(String imageName, String context) {
+    sh "docker build -t ${imageName} ${context}"
 }
 
-def push(String tag) {
-    sh """
-        docker push "${tag}"
-    """
+def push(String imageName) {
+    sh "docker push ${imageName}"
 }
