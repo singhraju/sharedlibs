@@ -1,7 +1,8 @@
 // vars/dockerBuild.groovy
-def login(String credentialsId = 'docker-credentials') {
-    withCredentials([usernamePassword(credentialsId: credentialsId, usernameVariable: 'DOCKER_USER', passwordVariable: 'DOCKER_PASS')]) {
-        sh 'docker login -u singhraju -p $DOCKER_PASS'
+def login(String credentialsId = 'docker-secret') {
+    withCredentials([string(credentialsId: credentialsId, variable: 'DOCKER_TOKEN')]) {
+        // For Docker Hub or similar registries
+        sh "echo $DOCKER_TOKEN | docker login -u singhraju --password-stdin"
     }
 }
 
